@@ -1,4 +1,4 @@
-htmlq v1.0.0
+htmlq v1.0.1
 ====
 
 `htmlq` is a `command-line` tool that allows you to query HTML using `CSS selectors` or `XPATH` and retrieve the corresponding `text content` (similar to JavaScript's `document.querySelector(query).textContent`).
@@ -8,7 +8,7 @@ Usage
 ====
 
 ```
-usage: htmlq 1.0.0 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
+usage: htmlq 1.0.1 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
                    [-u|--url "<value>"] [-x|--XPATH] [-a|--SelectorAll]
                    [-r|--ResultAsNode] [-l|--PrintLastResult] [-H|--headers
                    "<value>" [-H|--headers "<value>" ...]] [-v|--verbose]
@@ -22,9 +22,11 @@ usage: htmlq 1.0.0 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
 Arguments:
 
   -h  --help             Print help information
+
   -f  --file             Enter the relative or absolute path of the HTML file
   -t  --text             Enter the HTML text content
   -u  --url              Enter the URL of the HTML
+
   -x  --XPATH            Enable default XPATH query syntax instead of CSS
                          Selectors. Default: false
   -a  --SelectorAll      Enable the SelectorAll mechanism. When there are
@@ -38,6 +40,7 @@ Arguments:
   -l  --PrintLastResult  Enable printing the content of the last result in the
                          output when using the "#lastresult" syntax in the
                          query. Default: false
+
   -H  --headers          You can input corresponding names for each result of a
                          single query using the format "#{serial
                          number}:header1Name;header2Name;header3Name;...". The
@@ -78,7 +81,7 @@ Examples
 
 Note: In command-line, to break a line in Linux you use "\\", while in Windows you use "^".
 
-```
+```Shell
 htmlq --XPATH --SelectorAll -vv --PrintLastResult 
 -t "<table class='ws-table-all notranslate'><tbody><tr><th>Tag</th><th>Description</th></tr><tr><td>&lt;table&gt;</td><td>Defines a table</td></tr><tr><td>&lt;th&gt;</td><td>Defines a header cell in a table</td></tr><tr><td>&lt;tr&gt;</td><td>Defines a row in a table</td></tr><tr><td>&lt;td&gt;</td><td>Defines a cell in a table</td></tr><tr><td>&lt;caption&gt;</td><td>Defines a table caption</td></tr><tr><td>&lt;colgroup&gt;</td><td>Specifies a group of one or more columns in a table for formatting</td></tr><tr><td>&lt;col&gt;</td><td>Specifies column properties for each column within a colgroup element</td></tr><tr><td>&lt;thead&gt;</td><td>Groups the header content in a table</td></tr><tr><td>&lt;tbody&gt;</td><td>Groups the body content in a table</td></tr><tr><td>&lt;tfoot&gt;</td><td>Groups the footer content in a table</td></tr></tbody></table>" 
 --headers "#1:Tag1;Description1" --headers "#3:Tag3;Description3" 
@@ -90,21 +93,21 @@ htmlq --XPATH --SelectorAll -vv --PrintLastResult
 "//table[contains(@class,'ws-table-all')]//tr[contains(.,'#lastresult')]/td[2]"
 ```
 
-```
+```Shell
 0: //table[contains(@class,'ws-table-all')]//tr[5]
 0-0:
 <td>
 Defines a cell in a table
 ```
 
-```
+```Shell
 1: table.ws-table-all tr:nth-child(5)
 1-0:
 Tag1:<td>
 Description1:Defines a cell in a table
 ```
 
-```
+```Shell
 2: table.ws-table-all tr
 2-0:
 Tag
@@ -141,7 +144,7 @@ Groups the body content in a table
 Groups the footer content in a table
 ```
 
-```
+```Shell
 3: //table[contains(@class,'ws-table-all')]//tr[not(th)]
 3-0:
 Tag3:<table>
@@ -175,7 +178,7 @@ Tag3:<tfoot>
 Description3:Groups the footer content in a table
 ```
 
-```
+```Shell
 4: //table[contains(@class,'ws-table-all')]//tr/td[1]
 4-0:
 <table>
@@ -199,7 +202,7 @@ Description3:Groups the footer content in a table
 <tfoot>
 ```
 
-```
+```Shell
 5: //table[contains(@class,'ws-table-all')]//tr[contains(.,'#lastresult')]/td[2]
 5-0:
 <table>
