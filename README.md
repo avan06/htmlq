@@ -1,4 +1,4 @@
-htmlq v1.0.2
+htmlq v1.0.3
 ====
 
 `htmlq` is a `command-line` tool that allows you to query HTML using `CSS selectors` or `XPATH` and retrieve the corresponding `text content` (similar to JavaScript's `document.querySelector(query).textContent`).
@@ -8,11 +8,12 @@ Usage
 ====
 
 ```
-usage: htmlq 1.0.2 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
+usage: htmlq 1.0.3 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
                    [-u|--url "<value>"] [-x|--XPATH] [-a|--SelectorAll]
-                   [-r|--ResultAsNode] [-l|--PrintLastResult] [-H|--headers
-                   "<value>" [-H|--headers "<value>" ...]] [-v|--verbose]
-                   -q|--querys "<value>" [-q|--querys "<value>" ...]
+                   [-r|--ResultAsNode] [-l|--PrintLastResult]
+                   [--PrintLastResultTemp] [-H|--headers "<value>"
+                   [-H|--headers "<value>" ...]] [-v|--verbose] -q|--querys
+                   "<value>" [-q|--querys "<value>" ...]
 
                    A command-line tool that allows you to query HTML using CSS
                    selectors or XPATH and retrieve the corresponding text
@@ -21,46 +22,53 @@ usage: htmlq 1.0.2 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
 
 Arguments:
 
-  -h  --help             Print help information
+  -h  --help                 Print help information
+  -f  --file                 Enter the relative or absolute path of the HTML
+                             file
+  -t  --text                 Enter the HTML text content
+  -u  --url                  Enter the URL of the HTML
 
-  -f  --file             Enter the relative or absolute path of the HTML file
-  -t  --text             Enter the HTML text content
-  -u  --url              Enter the URL of the HTML
+  -x  --XPATH                Enable default XPATH query syntax instead of CSS
+                             Selectors. Default: false
+  -a  --SelectorAll          Enable the SelectorAll mechanism. When there are
+                             multiple results for a single query, it will
+                             return all the results (similar to
+                             querySelectorAll). By default, it is not enabled,
+                             and only a single result is returned (similar to
+                             querySelector).. Default: false
+  -r  --ResultAsNode         Enable using the Node from the previous query
+                             result as the current query's root Node. Default:
+                             false
+  -l  --PrintLastResult      Enable printing the content of the last result in
+                             the output when using the "#lastresult" syntax in
+                             the query. Default: false
+      --PrintLastResultTemp  Enable printing the temporary content of the
+                             source data as last result in the output, when
+                             using the "#lastresult" syntax in query. Default:
+                             false
 
-  -x  --XPATH            Enable default XPATH query syntax instead of CSS
-                         Selectors. Default: false
-  -a  --SelectorAll      Enable the SelectorAll mechanism. When there are
-                         multiple results for a single query, it will return
-                         all the results (similar to querySelectorAll). By
-                         default, it is not enabled, and only a single result
-                         is returned (similar to querySelector).. Default:
-                         false
-  -r  --ResultAsNode     Enable using the Node from the previous query result
-                         as the current query's root Node. Default: false
-  -l  --PrintLastResult  Enable printing the content of the last result in the
-                         output when using the "#lastresult" syntax in the
-                         query. Default: false
-
-  -H  --headers          You can input corresponding names for each result of a
-                         single query using the format "#{serial
-                         number}:header1Name;header2Name;header3Name;...". The
-                         serial number represents the Nth query, starting from
-                         zero.
-  -v  --verbose          verbose
-  -q  --querys           Enter a query value to retrieve the Node Text of the
-                         target HTML. The default query method is CSS
-                         Selectors, but it can be changed to XPATH using "-x"
-                         or "--XPATH". Both query methods can be mixed. When a
-                         query starts with "C:", it represents CSS Selectors,
-                         and when it starts with "X:", it represents
-                         XPATH.
+  -H  --headers              When the query item is a table or multiple td
+                             fields, you can enter corresponding names for each
+                             individual field in a single query using the
+                             format "#{serial
+                             number}:header1Name;header2Name;header3Name;...",
+                             where the serial number represents the Nth query
+                             starting from zero.
+  -v  --verbose              verbose
+  -q  --querys               Enter a query value to retrieve the Node Text of
+                             the target HTML. The default query method is CSS
+                             Selectors, but it can be changed to XPATH using
+                             "-x" or "--XPATH". Both query methods can be
+                             mixed. When a query starts with "C:", it
+                             represents CSS Selectors, and when it starts with
+                             "X:", it represents XPATH.
 
 	You can enter multiple query values separated by spaces and return all the
-                         results.
+                             results.
 	
 	* When the "--ResultNode" is enabled, you can use the following special query
-                         values to change the current position of the HTML
-                         Node:
+                             values to change the current position of the HTML
+                             Node:
 	  - Parent: Move the Node up one level
 	  - NextSibling: Move the Node to the next sibling in the same level
 	  - PrevSibling: Move the Node to the previous sibling in the same level
@@ -69,11 +77,11 @@ Arguments:
 	  - reset: Restore the Node to the root node of the original input
 	
 	* When using the "#lastresult" query syntax, the text content of the previous
-                         query will automatically replace
-                         "#lastresult".
+                             query will automatically replace
+                             "#lastresult".
 	
 	Example: --ResultNode -q Query1 Parent Query2 NextSibling Query3 LastChild
-                         C:Query4 reset X:Query5
+                             C:Query4 reset X:Query5
 ```
 
 Examples

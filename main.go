@@ -22,7 +22,7 @@ var (
 	results   [][]interface{}
 	headerMap = make(map[int]interface{})
 	// Create new parser object
-	parser = argparse.NewParser("htmlq 1.0.2", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
+	parser = argparse.NewParser("htmlq 1.0.3", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
 
 	// Create filePath flag
 	filePath = parser.String("f", "file", &argparse.Options{Help: `Enter the relative or absolute path of the HTML file`})
@@ -39,9 +39,11 @@ var (
 	isResultAsNode = parser.Flag("r", "ResultAsNode", &argparse.Options{Help: `Enable using the Node from the previous query result as the current query's root Node`, Default: false})
 	// Create isPrintLastResult flag
 	isPrintLastResult = parser.Flag("l", "PrintLastResult", &argparse.Options{Help: `Enable printing the content of the last result in the output when using the "#lastresult" syntax in the query`, Default: false})
+	// Create isPrintLastResultTemp flag
+	isPrintLastResultTemp = parser.Flag("", "PrintLastResultTemp", &argparse.Options{Help: `Enable printing the temporary content of the source data as last result in the output, when using the "#lastresult" syntax in query`, Default: false})
 
 	// Create headers flag
-	headers = parser.StringList("H", "headers", &argparse.Options{Help: `You can input corresponding names for each result of a single query using the format "#{serial number}:header1Name;header2Name;header3Name;...". The serial number represents the Nth query, starting from zero.`})
+	headers = parser.StringList("H", "headers", &argparse.Options{Help: `When the query item is a table or multiple td fields, you can enter corresponding names for each individual field in a single query using the format "#{serial number}:header1Name;header2Name;header3Name;...", where the serial number represents the Nth query starting from zero.`})
 	// Create verboses flag
 	verboses = parser.FlagCounter("v", "verbose", &argparse.Options{Help: `verbose`})
 	// Create querys flag
@@ -200,16 +202,21 @@ func main() {
 		}
 
 		var result []interface{}
+		level := 0
 		for _, ele := range selected {
 			text := &bytes.Buffer{}
-			collectText(ele, text, 0)
+			collectText(ele, text, level)
+			//To correctly read the header names, increment the level by one after processing each td element node.
+			if ele.Type == html.ElementNode && ele.Data == "td" {
+				level++
+			}
 			result = append(result, strings.TrimSuffix(text.String(), "\n"))
 			if !*isSelectorAll {
 				break
 			}
 		}
 
-		if *verboses < 2 && qIdx+1 < len(*querys) && strings.Contains((*querys)[qIdx+1], "#lastresult") {
+		if !*isPrintLastResultTemp && qIdx+1 < len(*querys) && strings.Contains((*querys)[qIdx+1], "#lastresult") {
 		} else {
 			if *verboses > 1 {
 				info := fmt.Sprint(len(results), ": ")
@@ -269,6 +276,7 @@ func collectText(n *html.Node, buf *bytes.Buffer, level int) {
 	}
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		collectText(c, buf, level)
+		//To correctly read the header names, increment the level by one after processing each child td element node.
 		if c.Type == html.ElementNode && c.Data == "td" {
 			level++
 		}
