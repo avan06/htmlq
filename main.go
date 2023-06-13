@@ -22,7 +22,7 @@ var (
 	results   [][]interface{}
 	headerMap = make(map[int]interface{})
 	// Create new parser object
-	parser = argparse.NewParser("htmlq 1.0.1", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
+	parser = argparse.NewParser("htmlq 1.0.2", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
 
 	// Create filePath flag
 	filePath = parser.String("f", "file", &argparse.Options{Help: `Enter the relative or absolute path of the HTML file`})
@@ -101,13 +101,23 @@ func main() {
 			if len(pathParts) > 1 {
 				remainingPath = pathParts[1]
 			}
-			// Get the home directory path of the specified user
-			userAccount, err := user.Lookup(userPart)
-			if err != nil {
-				panic(err)
+			// Check if it is the current user
+			if userPart == "" {
+				currentUser, err := user.Current()
+				if err != nil {
+					panic("Unable to get current user information: " + err.Error())
+				}
+				// Replace the tilde in the path with the current user's home directory
+				*filePath = filepath.Join(currentUser.HomeDir, remainingPath)
+			} else {
+				// Get the home directory path of the specified user
+				userAccount, err := user.Lookup(userPart)
+				if err != nil {
+					panic("Unable to get user information: " + err.Error())
+				}
+				// Replace the tilde in the path with the specified user's home directory
+				*filePath = filepath.Join(userAccount.HomeDir, remainingPath)
 			}
-			// Replace the tilde in the path with the specified user's home directory
-			*filePath = filepath.Join(userAccount.HomeDir, remainingPath)
 		}
 		fileContent, err := os.ReadFile(*filePath)
 		if err != nil {
