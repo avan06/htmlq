@@ -203,12 +203,16 @@ func main() {
 
 		var result []interface{}
 		level := 0
-		for _, ele := range selected {
+		for idx, ele := range selected {
 			text := &bytes.Buffer{}
 			collectText(ele, text, level)
 			//To correctly read the header names, increment the level by one after processing each td element node.
-			if ele.Type == html.ElementNode && ele.Data == "td" {
-				level++
+			if idx+1 < len(selected) && ele.Type == html.ElementNode && ele.Data == "td" {
+				if ele.Parent == selected[idx+1].Parent {
+					level++
+				} else {
+					level = 0
+				}
 			}
 			result = append(result, strings.TrimSuffix(text.String(), "\n"))
 			if !*isSelectorAll {
