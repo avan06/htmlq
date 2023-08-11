@@ -22,7 +22,7 @@ var (
 	results   [][]interface{}
 	headerMap = make(map[int]interface{})
 	// Create new parser object
-	parser = argparse.NewParser("htmlq 1.0.3", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
+	parser = argparse.NewParser("htmlq 1.0.4", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
 
 	// Create filePath flag
 	filePath = parser.String("f", "file", &argparse.Options{Help: `Enter the relative or absolute path of the HTML file`})
@@ -41,6 +41,10 @@ var (
 	isPrintLastResult = parser.Flag("l", "PrintLastResult", &argparse.Options{Help: `Enable printing the content of the last result in the output when using the "#lastresult" syntax in the query`, Default: false})
 	// Create isPrintLastResultTemp flag
 	isPrintLastResultTemp = parser.Flag("", "PrintLastResultTemp", &argparse.Options{Help: `Enable printing the temporary content of the source data as last result in the output, when using the "#lastresult" syntax in query`, Default: false})
+	// Create isPrintQuerysInAllResult flag
+	isPrintQuerysInAllResult = parser.Flag("", "PrintQuerysInAllResult", &argparse.Options{Help: `Enable printing of query conditions in results.`, Default: false})
+	// Create PrintTextToAllResult flag
+	printTextInAllResult = parser.String("", "PrintTextInAllResult", &argparse.Options{Help: `Enter a text content for printing in all results. If the content contains "#{serial number}", the content of the specified serial number's result will be automatically printed in all results following that serial number.`})
 
 	// Create headers flag
 	headers = parser.StringList("H", "headers", &argparse.Options{Help: `When the query item is a table or multiple td fields, you can enter corresponding names for each individual field in a single query using the format "#{serial number}:header1Name;header2Name;header3Name;...", where the serial number represents the Nth query starting from zero.`})
@@ -153,6 +157,13 @@ func main() {
 		headerMap[queryID] = heads
 	}
 
+	var printText string = ""
+	var printTextResultID *int = new(int)
+	printTextMatchs := regexp.MustCompile(`\#result(\d+)`).FindStringSubmatch(*printTextInAllResult)
+	if (len(printTextMatchs)) == 2 {
+		*printTextResultID, _ = strconv.Atoi(printTextMatchs[1])
+	}
+
 	currDoc := htmlDoc
 	var selected []*html.Node = nil
 	for qIdx, qVal := range *querys {
@@ -226,17 +237,30 @@ func main() {
 				info := fmt.Sprint(len(results), ": ")
 				info += qVal
 				fmt.Println()
-				color.HiGreen(info) //fmt.Println(info)
+				color.HiGreen(info)
 			}
+
+			if strings.Contains(*printTextInAllResult, "#result") && printTextResultID != nil && len(results) > *printTextResultID {
+				printText = fmt.Sprintf("%q", results[*printTextResultID])
+				printText = strings.NewReplacer(`" "`, ";", "[", "", "]", "", `"`, "").Replace(printText)
+				*printTextInAllResult = strings.ReplaceAll(*printTextInAllResult, fmt.Sprintf("#result%v", *printTextResultID), printText)
+			}
+
 			for idx, text := range result {
 				if *verboses > 0 {
-					color.HiCyan("%d-%d:\n", len(results), idx) //fmt.Printf("%d-%d:\n", len(results), idx)
+					color.HiCyan("%d-%d:\n", len(results), idx)
+					if *isPrintQuerysInAllResult {
+						color.HiMagenta(qVal)
+					}
+					if len(*printTextInAllResult) > 0 && !strings.Contains(*printTextInAllResult, "#result") {
+						color.HiYellow(*printTextInAllResult)
+					}
 					if *isPrintLastResult && strings.Contains(qVal, "#lastresult") && len(results)-1 >= 0 {
 						fmt.Printf("%s\n", results[len(results)-1][idx])
 					}
 				}
 
-				color.HiBlue("%s", text) //fmt.Println(text)
+				color.HiBlue("%s", text)
 			}
 		}
 		fmt.Println()
