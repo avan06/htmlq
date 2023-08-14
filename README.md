@@ -1,4 +1,4 @@
-htmlq v1.0.4
+htmlq v1.0.5
 ====
 
 `htmlq` is a `command-line` tool that allows you to query HTML using `CSS selectors` or `XPATH` and retrieve the corresponding `text content` (similar to JavaScript's `document.querySelector(query).textContent`).
@@ -8,7 +8,7 @@ Usage
 ====
 
 ```
-usage: htmlq 1.0.4 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
+usage: htmlq 1.0.5 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
                    [-u|--url "<value>"] [-x|--XPATH] [-a|--SelectorAll]
                    [-r|--ResultAsNode] [-l|--PrintLastResult]
                    [--PrintLastResultTemp] [--PrintQuerysInAllResult]
@@ -255,6 +255,7 @@ Credits
 ====
 
 * [antchfx/htmlquery](https://github.com/antchfx/htmlquery)
+* [andybalholm/cascadia](https://github.com/andybalholm/cascadia)
 * [ericchiang/css](https://github.com/ericchiang/css)
 * [akamensky/argparse](https://github.com/akamensky/argparse)
 * [fatih/color](https://github.com/fatih/color)

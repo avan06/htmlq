@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/akamensky/argparse"
+	"github.com/andybalholm/cascadia"
 	"github.com/antchfx/htmlquery"
-	"github.com/ericchiang/css"
 	"github.com/fatih/color"
 	"golang.org/x/net/html"
 )
@@ -22,7 +22,7 @@ var (
 	results   [][]interface{}
 	headerMap = make(map[int]interface{})
 	// Create new parser object
-	parser = argparse.NewParser("htmlq 1.0.4", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
+	parser = argparse.NewParser("htmlq 1.0.5", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
 
 	// Create filePath flag
 	filePath = parser.String("f", "file", &argparse.Options{Help: `Enter the relative or absolute path of the HTML file`})
@@ -281,11 +281,11 @@ func querySelect(queryXPATH bool, currDoc *html.Node, val string) (selected []*h
 			panic(err)
 		}
 	} else {
-		sel, err := css.Parse(val)
+		sel, err := cascadia.Parse(val)
 		if err != nil {
 			panic(err)
 		}
-		selected = sel.Select(currDoc)
+		selected = cascadia.QueryAll(currDoc, sel)
 	}
 	return selected
 }
