@@ -37,6 +37,12 @@ var (
 	isSelectorAll = parser.Flag("a", "SelectorAll", &argparse.Options{Help: `Enable the SelectorAll mechanism. When there are multiple results for a single query, it will return all the results (similar to querySelectorAll). By default, it is not enabled, and only a single result is returned (similar to querySelector).`, Default: false})
 	// Create isResultAsNode flag
 	isResultAsNode = parser.Flag("r", "ResultAsNode", &argparse.Options{Help: `Enable using the Node from the previous query result as the current query's root Node`, Default: false})
+	// Create trimResult flag
+	trimResult = parser.FlagCounter("", "Trim", &argparse.Options{Help: `trim the result text`})
+	// Create removeNewLineInResult flag
+	removeNewLineInResult = parser.FlagCounter("", "RemoveNewLine", &argparse.Options{Help: `remove new line in the result text`})
+	// Create RemoveConsecutiveWhiteChars flag
+	removeConsecutiveWhiteChars = parser.FlagCounter("", "RemoveConsecutiveWhiteChars", &argparse.Options{Help: `remove consecutive white characters in the result text`})
 	// Create isPrintLastResult flag
 	isPrintLastResult = parser.Flag("l", "PrintLastResult", &argparse.Options{Help: `Enable printing the content of the last result in the output when using the "#lastresult" syntax in the query`, Default: false})
 	// Create isPrintLastResultTemp flag
@@ -50,6 +56,7 @@ var (
 	headers = parser.StringList("H", "headers", &argparse.Options{Help: `When the query item is a table or multiple td fields, you can enter corresponding names for each individual field in a single query using the format "#{serial number}:header1Name;header2Name;header3Name;...", where the serial number represents the Nth query starting from zero.`})
 	// Create verboses flag
 	verboses = parser.FlagCounter("v", "verbose", &argparse.Options{Help: `verbose`})
+
 	// Create querys flag
 	querys = parser.StringList("q", "querys", &argparse.Options{Required: true, Help: `Enter a query value to retrieve the Node Text of the target HTML. The default query method is CSS Selectors, but it can be changed to XPATH using "-x" or "--XPATH". Both query methods can be mixed. When a query starts with "C:", it represents CSS Selectors, and when it starts with "X:", it represents XPATH.
 
@@ -146,6 +153,7 @@ func main() {
 	}
 
 	reg := regexp.MustCompile(`\#(\d+):`)
+	regWhiteChars := regexp.MustCompile(`\s+`)
 	for _, head := range *headers {
 		headMatchs := reg.FindStringSubmatch(head)
 		if len(headMatchs) != 2 {
@@ -260,7 +268,21 @@ func main() {
 					}
 				}
 
-				color.HiBlue("%s", text)
+				var tempText = text.(string)
+
+				if *removeNewLineInResult > 0 {
+					tempText = strings.ReplaceAll(tempText, "\n", "")
+				}
+
+				if *removeConsecutiveWhiteChars > 0 {
+					tempText = regWhiteChars.ReplaceAllString(tempText, " ")
+				}
+
+				if *trimResult > 0 {
+					tempText = strings.TrimSpace(tempText)
+				}
+
+				color.HiBlue("%s", tempText)
 			}
 		}
 		fmt.Println()
