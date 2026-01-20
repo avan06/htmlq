@@ -1,17 +1,16 @@
-htmlq v1.0.5
+htmlq v1.1.1
 ====
 
 `htmlq` is a `command-line` tool that allows you to query HTML using `CSS selectors` or `XPATH` and retrieve the corresponding `text content` (similar to JavaScript's `document.querySelector(query).textContent`).
 
 
-Installation
+# Installation
 
 ```
 go install github.com/avan06/htmlq@latest
 ```
 
-Usage
-====
+# Usage
 
 ```
 usage: htmlq 1.1.1 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
@@ -105,8 +104,7 @@ Arguments:
                                      C:Query4 reset X:Query5
 ```
 
-Examples
-====
+# Examples
 
 Note: In command-line, to break a line in Linux you use "\\", while in Windows you use "^".
 
@@ -266,8 +264,7 @@ Groups the footer content in a table
 ```
 
 
-Credits
-====
+# Credits
 
 * [antchfx/htmlquery](https://github.com/antchfx/htmlquery)
 * [andybalholm/cascadia](https://github.com/andybalholm/cascadia)
