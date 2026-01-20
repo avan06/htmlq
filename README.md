@@ -14,7 +14,7 @@ Usage
 ====
 
 ```
-usage: htmlq 1.1.0 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
+usage: htmlq 1.1.1 [-h|--help] [-f|--file "<value>"] [-t|--text "<value>"]
                    [-u|--url "<value>"] [-x|--XPATH] [-a|--SelectorAll]
                    [-r|--ResultAsNode] [--Trim] [--RemoveNewLine]
                    [--RemoveConsecutiveWhiteChars] [-l|--PrintLastResult]

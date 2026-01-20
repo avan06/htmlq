@@ -22,7 +22,7 @@ var (
 	results   [][]interface{}
 	headerMap = make(map[int]interface{})
 	// Create new parser object
-	parser = argparse.NewParser("htmlq 1.1.0", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
+	parser = argparse.NewParser("htmlq 1.1.1", "A command-line tool that allows you to query HTML using CSS selectors or XPATH and retrieve the corresponding text content (similar to JavaScript's `document.querySelector(query).textContent`)")
 
 	// Create filePath flag
 	filePath = parser.String("f", "file", &argparse.Options{Help: `Enter the relative or absolute path of the HTML file`})
@@ -166,10 +166,11 @@ func main() {
 	}
 
 	var printText string = ""
-	var printTextResultID *int = new(int)
+	var printTextResultID *int = nil
 	printTextMatchs := regexp.MustCompile(`\#result(\d+)`).FindStringSubmatch(*printTextInAllResult)
 	if (len(printTextMatchs)) == 2 {
-		*printTextResultID, _ = strconv.Atoi(printTextMatchs[1])
+		val, _ := strconv.Atoi(printTextMatchs[1])
+		printTextResultID = &val
 	}
 
 	currDoc := htmlDoc
